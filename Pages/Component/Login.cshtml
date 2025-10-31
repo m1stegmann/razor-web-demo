@@ -1,0 +1,9 @@
+@page "/component/login"
+@model web_demo.Pages.Component.LoginModel
+@{
+    Layout = null;
+}
+<button hx-get="/component/login?status=@Model.NextStatus" hx-swap="outerHTML"
+    class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">
+    @Model.DisplayText
+</button>
