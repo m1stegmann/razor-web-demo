@@ -15,7 +15,7 @@
     <div class="flex-1 h-24 bg-red-600" hx-get="/component/favorites" hx-trigger="userLoggedIn from:body"></div>
 </div>
 
-<div class="w-full h-48 bg-blue-600">
+<div class="w-full h-48 bg-blue-600" hx-get="/component/content" hx-trigger="load" hx-swap="outerHTML">
     <div class="p-4">Kostenfreier Content</div>
 </div>
 
