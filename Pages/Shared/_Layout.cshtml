@@ -7,6 +7,31 @@
     <title>@ViewData["Title"]</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/htmx.org@2.0.3"></script>
+    <script>
+        // Frühzeitig Styles setzen, bevor der erste Paint passiert
+        (function () {
+            // Sobald der DOM geparst wurde (aber idealerweise schon vorher verfügbar)
+            const lazyObserver = new MutationObserver(() => {
+                document.querySelectorAll('.lazy').forEach(el => {
+                    el.style.setProperty('visibility', 'hidden', 'important');
+                });
+            });
+
+            // Beobachte, wenn DOM weitergebaut wird (für noch nicht geparste lazy-Elemente)
+            lazyObserver.observe(document.documentElement, {
+                childList: true,
+                subtree: true
+            });
+
+            // Erste Runde für bereits vorhandene `.lazy`-Elemente
+            document.addEventListener("DOMContentLoaded", () => {
+                document.querySelectorAll('.lazy').forEach(el => {
+                    el.style.setProperty('visibility', 'hidden', 'important');
+                });
+                lazyObserver.disconnect(); // Falls nicht mehr gebraucht
+            });
+        })();
+    </script>
 </head>
 
 <body class="bg-white text-white">
