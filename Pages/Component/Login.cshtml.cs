@@ -12,12 +12,28 @@ namespace web_demo.Pages.Component
         {
             CurrentPath = Request.Path;
             string status = Request.Query["status"].ToString();
-            DisplayText = status == "logout" ? "Logout" : "Login";
-            NextStatus = status == "logout" ? "login" : "logout";
 
-            // Cookie setzen
-            bool isLoggedIn = status == "logout";
-            Response.Cookies.Append("login", isLoggedIn ? "true" : "false");
+            // Status aus Query-Parameter oder Cookie ermitteln
+            bool isLoggedIn;
+            if (!string.IsNullOrEmpty(status))
+            {
+                isLoggedIn = status == "logout";
+                Response.Cookies.Append("login", isLoggedIn ? "true" : "false");
+            }
+            else
+            {
+                isLoggedIn = Request.Cookies["login"] == "true";
+                if (!Request.Cookies.ContainsKey("login"))
+                {
+                    Response.Cookies.Append("login", "false");
+                }
+            }
+
+            DisplayText = isLoggedIn ? "Logout" : "Login";
+            NextStatus = isLoggedIn ? "login" : "logout";
+
+            // Custom Header für HTMX Event-Trigger
+            Response.Headers.Append("HX-Trigger", isLoggedIn ? "userLoggedIn" : "userLoggedOut");
         }
     }
 }

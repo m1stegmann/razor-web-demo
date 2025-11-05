@@ -8,29 +8,51 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/htmx.org@2.0.3"></script>
     <script>
-        // Frühzeitig Styles setzen, bevor der erste Paint passiert
+
+        // hide lazy elements before first paint
         (function () {
-            // Sobald der DOM geparst wurde (aber idealerweise schon vorher verfügbar)
+            // As soon as the DOM is parsed (but ideally available even earlier)
             const lazyObserver = new MutationObserver(() => {
                 document.querySelectorAll('.lazy').forEach(el => {
-                    el.style.setProperty('visibility', 'hidden', 'important');
+                    el.style.setProperty('display', 'none', 'important');
                 });
             });
 
-            // Beobachte, wenn DOM weitergebaut wird (für noch nicht geparste lazy-Elemente)
+            // Observe DOM construction for not yet parsed lazy elements
             lazyObserver.observe(document.documentElement, {
                 childList: true,
                 subtree: true
             });
 
-            // Erste Runde für bereits vorhandene `.lazy`-Elemente
+            // First pass for already existing `.lazy` elements
             document.addEventListener("DOMContentLoaded", () => {
                 document.querySelectorAll('.lazy').forEach(el => {
-                    el.style.setProperty('visibility', 'hidden', 'important');
+                    el.style.setProperty('display', 'none', 'important');
                 });
-                lazyObserver.disconnect(); // Falls nicht mehr gebraucht
+                lazyObserver.disconnect(); // If no longer needed
             });
         })();
+
+        document.addEventListener('htmx:afterRequest', function (event) {
+            const triggerEl = event.detail.requestConfig?.elt;
+
+            if (!triggerEl) return;
+
+            if (event.detail.xhr.status === 204) {
+                triggerEl.classList.remove('lazy');
+                triggerEl.style.removeProperty('display');
+            }
+        });
+
+        // HTMX triggert Events automatisch via HX-Trigger Header
+        // Zusätzliches Logging für Debugging
+        document.body.addEventListener('userLoggedIn', function () {
+            console.log('User logged in event triggered');
+        });
+
+        document.body.addEventListener('userLoggedOut', function () {
+            console.log('User logged out event triggered');
+        });
     </script>
 </head>
 
@@ -38,17 +60,6 @@
     <main class="max-w-[1024px] mx-auto p-4 space-y-2">
         @RenderBody()
     </main>
-    <script>
-        document.body.addEventListener('htmx:beforeSwap', function (event) {
-            const target = event.detail.elt;
-            const loginStatus = target.getAttribute('data-login-status');
-
-            if (loginStatus) {
-                const eventName = loginStatus === 'login' ? 'userLoggedOut' : 'userLoggedIn';
-                document.body.dispatchEvent(new CustomEvent(eventName));
-            }
-        });
-    </script>
 </body>
 
 </html>
