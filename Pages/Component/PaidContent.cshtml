@@ -1,8 +1,13 @@
 @page "/component/paidcontent"
 @model web_demo.Pages.Component.PaidContentModel
-<div class="p-4" hx-get="/component/paidcontent" hx-trigger="userLoggedIn from:body, userLoggedOut from:body">
-    @if (Model.IsLoggedIn)
-    {
+
+@if (Model.IsLoggedIn)
+{
+    <div class="w-full h-96 bg-red-600 p-4">
         <p>Main content - Last loaded: @DateTime.Now.ToString("HH:mm:ss")</p>
-    }
-</div>
+    </div>
+}
+else
+{
+    <div />
+}

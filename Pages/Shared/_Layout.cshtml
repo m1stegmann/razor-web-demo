@@ -7,6 +7,11 @@
     <title>@ViewData["Title"]</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/htmx.org@2.0.3"></script>
+    <style>
+        .lazy-hide {
+            display: none !important;
+        }
+    </style>
     <script>
 
         // hide lazy elements before first paint
@@ -14,7 +19,7 @@
             // As soon as the DOM is parsed (but ideally available even earlier)
             const lazyObserver = new MutationObserver(() => {
                 document.querySelectorAll('.lazy').forEach(el => {
-                    el.style.setProperty('display', 'none', 'important');
+                    el.classList.add('lazy-hide');
                 });
             });
 
@@ -27,7 +32,7 @@
             // First pass for already existing `.lazy` elements
             document.addEventListener("DOMContentLoaded", () => {
                 document.querySelectorAll('.lazy').forEach(el => {
-                    el.style.setProperty('display', 'none', 'important');
+                    el.classList.add('lazy-hide');
                 });
                 lazyObserver.disconnect(); // If no longer needed
             });
@@ -40,7 +45,7 @@
 
             if (event.detail.xhr.status === 204) {
                 triggerEl.classList.remove('lazy');
-                triggerEl.style.removeProperty('display');
+                triggerEl.classList.remove('lazy-hide');
             }
         });
 
